@@ -1,0 +1,21 @@
+/*.recommend{ background:url(../images/ser.png) no-repeat; overflow:hidden; padding-top:18px;}*/
+.ser-li{ width:178px; height:44px; float:left; background:url(../images/icon.png) 0 -286px; position:relative;}
+.ser-li a{ display:block; height:44px; padding-left:15px;}
+.ser-li span{ font-size:12px; color:#fef6d6; font-weight:bold; text-shadow:#000 1px 0 0,#000 0 1px 0,#000 -1px 0 0,#000 0 -1px 0;
+    /*-webkit-text-shadow:#000 1px 0 0,#000 0 1px 0,#000 -1px 0 0,#000 0 -1px 0;*/
+    /*-moz-text-shadow:#000 1px 0 0,#000 0 1px 0,#000 -1px 0 0,#000 0 -1px 0;*/
+    /**filter: Glow(color=#000, strength=1);*/
+    line-height:38px;
+}
+.ser-li i{ display:block; width:36px; height:38px; background:url(../images/icon.png) -170px -212px; position:absolute; top:-6px; right:-6px;}
+.ser-li i.hide{ display:none;}
+.ser-li em,.service-tip em{ display:inline-block; width:23px; height:23px; background:url(../images/icon.png) -209px -116px; vertical-align:middle;}
+.ser-li em.speed1,.service-tip em.speed1{ background-position:-209px -116px;}
+.ser-li em.speed2,.service-tip em.speed2{ background-position:-235px -116px;}
+.ser-li em.speed3,.service-tip em.speed3{ background-position:-262px -116px;}
+.ser-li em.speed4,.service-tip em.speed4{ background-position:-289px -116px;}
+
+.hot{ overflow:hidden; margin-top:5px;}
+.hot h3{ width:135px; height:18px; background:url(../images/icon.png) -209px -212px;}
+.hot-area .ser-li{ margin:0 45px 16px 0;}
+.ser-hot{ background-position:0 -333px;}
