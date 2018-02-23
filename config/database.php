@@ -54,6 +54,36 @@ return [
             'engine' => null,
         ],
 
+        'mysql_nian' => [
+            'driver' => 'mysql',
+            'host' => env('DB_HOST_NIAN', '127.0.0.1'),
+            'port' => env('DB_PORT_NIAN', '3306'),
+            'database' => env('DB_DATABASE_NIAN', 'forge'),
+            'username' => env('DB_USERNAME_NIAN', 'forge'),
+            'password' => env('DB_PASSWORD_NIAN', ''),
+            'unix_socket' => env('DB_SOCKET_NIAN', ''),
+            'charset' => 'utf8mb4',
+            'collation' => 'utf8mb4_unicode_ci',
+            'prefix' => '',
+            'strict' => true,
+            'engine' => null,
+        ],
+
+        'mysql_answer' => [
+            'driver' => 'mysql',
+            'host' => env('DB_HOST_ANSWER', '127.0.0.1'),
+            'port' => env('DB_PORT_ANSWER', '3306'),
+            'database' => env('DB_DATABASE_ANSWER', 'forge'),
+            'username' => env('DB_USERNAME_ANSWER', 'forge'),
+            'password' => env('DB_PASSWORD_ANSWER', ''),
+            'unix_socket' => env('DB_SOCKET_ANSWER', ''),
+            'charset' => 'utf8mb4',
+            'collation' => 'utf8mb4_unicode_ci',
+            'prefix' => '',
+            'strict' => true,
+            'engine' => null,
+        ],
+
         'pgsql' => [
             'driver' => 'pgsql',
             'host' => env('DB_HOST', '127.0.0.1'),

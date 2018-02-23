@@ -41,15 +41,24 @@ class InsertData extends Command
     public function handle()
     {
         $redisServ = RedisService::getReadInstance();
-        for ($i =1; $i<=1000;$i++){
-            $account = 15068775512;
-            $area = 8;
+        for ($i =1; $i<=100000;$i++){
+            if ($i > 80000){
+                $area = 9;
+            }elseif ($i > 60000){
+                $area = 8;
+            }elseif ($i > 40000){
+                $area = 5;
+            }elseif ($i > 20000){
+                $area = 2;
+            }else{
+                $area = 1;
+            }
+            $account = '15068775512';
             $time = rand(1508392000,time());
             $job = ['event_id'=> 7, 'account'=> $account,'area'=> $area, 'timestamp'=>$time, 'points'=>1];
             $job = json_encode($job);
 
-            $redisServ->lPush('pointsMQS#jzn',$job);
+            $redisServ->lPush('pointsMQS#dns',$job);
         }
-
     }
 }

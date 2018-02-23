@@ -62,13 +62,13 @@ class CheckResque
                 if (!file_exists(__DIR__ . '/../../storage/logs'))
                     mkdir(__DIR__ . '/../../storage/logs');
                 $path = __DIR__ . '/../../';
-                $start_master_cmd = "php $path/artisan resque:run ".$queueName." 2 >> $path/storage/logs/start_resque.log &";
+                $start_master_cmd = "php $path/artisan resque:run ".$queueName." 20 >> $path/storage/logs/start_resque.log &";
                 shell_exec("$start_master_cmd");
                 echo date('Y-m-d H:i:s',time())." : process restarted\r\n";
             }
             echo date('Y-m-d H:i:s',time())." : process has already started\r\n";
         }catch(\Exception $e){
-            echo date('Y-m-d H:i:s',time())." : error \r\n". $e->getMessage()."\r\n".$e->getTrace()."\r\n";
+            echo date('Y-m-d H:i:s',time())." : error \r\n". $e->getMessage()."\r\n".json_encode($e->getTrace())."\r\n";
         }
     }
 }

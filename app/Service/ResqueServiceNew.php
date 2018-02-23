@@ -8,32 +8,32 @@
 
 namespace App\Service;
 
-
-use App\Model\ConsumeLog;
-
-class ResqueService
+class ResqueServiceNew
 {
 
     public $shutdown = false;
     public $paused = false;
     public $queue;  //任务队列
-    static public $queueStatic;  //任务队列
     public $queueError;  //无法处理的任务队列
     public $keyError;  //无法处理的任务计数key
     public $redis;
-    private $child;
-    private $maxProcesses = 100;
+    public $child;
     const  DEFAULT_INTERVAL = 5;
-    
+    static private $job;
+    static private $resqueInstance = '';
 
     public function __construct($queue = 'default')
     {
         $this->queue = $queue;
-        self::$queueStatic = $queue;
         $this->queueError = $queue.'_error';
         $this->keyError = $queue.'_error_count';
 
         $this->redis = RedisService::getReadInstance();
+        self::$resqueInstance = new ResqueService($this->queue);
+
+        if (!isset(config('resqueQueue')[$this->queue]))
+            die('Not found the job of this queue!');
+        self::$job = config('resqueQueue')[$this->queue];
     }
 
     public static function fork()
@@ -56,7 +56,7 @@ class ResqueService
 
     public function work($interval = self::DEFAULT_INTERVAL, $blocking = false)
     {
-//        echo date('Y-m-d H:i:s',time()).": Workers has started!\r\n";
+        echo date('Y-m-d H:i:s',time()).": Workers has started!\r\n";
 //        $this->updateProcLine('Starting');
         $this->startup();
 
@@ -67,9 +67,6 @@ class ResqueService
                 break;
             }
 
-            if ($this->child >= $this->maxProcesses){
-                continue;
-            }
             // Attempt to find and reserve a job
             $job = false;
             if(!$this->paused) {
@@ -93,24 +90,9 @@ class ResqueService
                 }
                 continue;
             }
-
-            $childProcess = new \swoole_process([ConsumeService::$consumeService, 'process']);
-            $childProcess->name('resque : Processing ' . $this->queue);
-            $childProcess->write($job);
-            $childPid = $childProcess->start();
-
-            if ($childProcess->read() == 'shutdown'){
-                $this->shutdown = true;
-                continue;
-            }
-
-            if ($childPid === false){
-                echo '创建子进程失败！';
-                $this->rollbackToQueue($job);
-                $this->shutdown = true;
-                continue;
-            }
-            $this->child++;
+            $status = 'Processing ' . $this->queue;
+            $this->updateProcLine($status);
+            $this->perform($job);
         }
 
     }
@@ -125,7 +107,6 @@ class ResqueService
             return;
         }
 
-        pcntl_signal(SIGCHLD, array($this, 'sig_handler'));
         pcntl_signal(SIGTERM, array($this, 'shutDownNow'));
         pcntl_signal(SIGINT, array($this, 'shutDownNow'));
         pcntl_signal(SIGQUIT, array($this, 'shutdown'));
@@ -139,12 +120,6 @@ class ResqueService
             return;
         }
         pcntl_signal_dispatch();
-    }
-
-    private function sig_handler($signo) {
-        while($ret = \swoole_process::wait(false)) {
-            $this->child--;
-        }
     }
 
     /**
@@ -205,18 +180,23 @@ class ResqueService
         return false;
     }
 
-    public static function resqueLog($msg){
-        if (!file_exists(__DIR__.'/../../storage/logs'))
-            mkdir(__DIR__.'/../../storage/logs');
-        file_put_contents(__DIR__.'/../../storage/logs/error_'.self::$queueStatic.'.log',date('Y-m-d H:i:s',time())." Error:\r\n".$msg."\r\n\r\n",FILE_APPEND);
+    public function perform($json_job){
+
+        try{
+
+            $jobServ = self::$job;
+            if ($jobServ::perform($json_job) === false)
+                self::$resqueInstance->rollbackToQueue($json_job);
+
+        }catch (\Exception $e){
+            self::$resqueInstance->rollbackToQueue($json_job);
+            ResqueService::resqueLog($e->getMessage()."\r\n".json_encode($e->getTrace()));
+        }
     }
 
-    public function rollbackToQueue($json_job){
-        if ($this->redis->hGet($this->keyError,$json_job) >=5){
-            $this->redis->lPush($this->queueError,$json_job);
-        }else{
-            $this->redis->hIncrBy($this->keyError,$json_job,1);
-            $this->redis->lPush($this->queue,$json_job);
-        }
+    public function resqueLog($msg){
+        if (!file_exists(__DIR__.'/../../storage/logs'))
+            mkdir(__DIR__.'/../../storage/logs');
+        file_put_contents(__DIR__.'/../../storage/logs/error_resque.log',date('Y-m-d H:i:s',time())." Error:\r\n".$msg."\r\n\r\n",FILE_APPEND);
     }
 }

@@ -8,5 +8,8 @@
 return [
     'default'=>'\App\Job\DefaultJob',
     'pointsMQS#jzn'=>'\App\Job\JznJob',
-    'test'=>'\App\Job\JznJob'
+    'pointsMQS#dns'=>'\App\Job\DnsJob',
+    'revival_list'=>'\App\Job\RevivalJob',
+    'bonus_list'=>'\App\Job\BonusJob',
+    'rank_list'=>'\App\Job\RankJob',
 ];

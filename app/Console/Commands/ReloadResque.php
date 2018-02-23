@@ -55,7 +55,7 @@ class ReloadResque extends Command
             shell_exec($start_master_cmd);
             echo date('Y-m-d H:i:s',time()).": Workers has restarted!\r\n";
         }catch (\Exception $e){
-            echo date('Y-m-d H:i:s',time())." : error \r\n". $e->getMessage()."\r\n".$e->getTrace()."\r\n";
+            echo date('Y-m-d H:i:s',time())." : error \r\n". $e->getMessage()."\r\n".json_encode($e->getTrace())."\r\n";
         }
     }
 
